@@ -4,7 +4,42 @@ html, body {
     padding: 0;
 }
 
+h1 {
+    margin: 0;
+    padding: 10px;
+    background: white;
+}
+
 #map {
     width: 100%;
-    height: 100vh;   /* Full screen height */
+    height: calc(100vh - 60px);
+}
+
+/* Sequence Control Styling */
+.sequence-control-container {
+    background-color: rgb(10, 10, 10);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(97, 95, 95, 0.821);
+    font-family: sans-serif;
+}
+
+.sequence-control-container button {
+    background-color: #ff6600;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    margin: 2px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.sequencecontrol-container input {
+    width: 200px;
+}
+
+#date-label {
+    margin-top: 5px;
+    font-weight: bold;
+    color: rgba(218, 78, 22, 0.93);
 }
