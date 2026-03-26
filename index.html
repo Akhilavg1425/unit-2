@@ -1,40 +1,495 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="utf-8">
-<title>Earthquake Activity Map</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Seismic Activity Dashboard</title>
 
-<!-- Leaflet CSS -->
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* PANEL TEXT */
+#side-panel {
+  font-family: "Segoe UI", Arial, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.5;
+  color: #dcdcdc;
+}
 
-<link rel="stylesheet" href="css/style.css"/>
+/* HEADINGS */
+#side-panel h3 {
+  color: #00e5ff !important;
+  font-size: 18px !important;
+}
 
+#side-panel h4 {
+  color: #ff9800 !important;
+  font-size: 15px !important;
+}
+
+/* TEXT */
+#side-panel p, 
+#side-panel li {
+  font-size: 13px !important;
+  color: #cfcfcf !important;
+}
+</style>
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #111;
+  color: white;
+  font-family: Arial;
+}
+
+h1 {
+  height: 60px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+#container {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+#map {
+  flex: 3;
+  height: 100%;
+}
+
+#side-panel {
+  flex: 1;
+  background: #1b1b1b;
+  padding: 15px;
+  overflow: auto;
+}
+
+.sequence-control-container {
+  background: black;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.legend {
+  background: #222;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.legend span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+}
+
+.legend .risk {
+  background: red;
+  border-radius: 50%;
+}
+</style>
 </head>
 
 <body>
 
-<h1>Global Seismic Activity</h1>
+<h1>Global Earthquake Spatiotemporal Analysis Dashboard</h1>
 
-<div id="map">
+<div id="container">
 
-    <!--Map Description Overlay -->
-    <div id="map-overlay">
-        <b>Earthquake Activity Map</b><br>
-        This interactive map shows global earthquake activity recorded by the USGS 
-        between Jan 26 and Feb 26, 2026. Circle size represents earthquake magnitude, 
-        while colors classify magnitude ranges. Use the time slider to explore how 
-        seismic activity changes over time.
-    </div>
+<div id="map"></div>
 
+<div id="side-panel">
+
+<h3>Earthquake Insights</h3>
+<div id="stats"></div>
+
+<label>Magnitude Filter:</label>
+<input type="range" id="magFilter" min="0" max="7" step="0.5" value="1">
+<span id="magValue">1</span>
+
+<button id="play">▶ Play</button>
+
+<canvas id="chart"></canvas>
+<canvas id="histogram"></canvas>
+<div id="liveStats"></div>
+
+<hr>
+
+<div id="insight-box">
+<h3>Scientific Interpretation</h3>
+
+<p>
+This dashboard presents a spatiotemporal analysis of global seismic activity using 
+earthquake event data. Earthquakes occur due to the sudden release of accumulated 
+stress along faults within the Earth's lithosphere, generating seismic waves that 
+propagate through the Earth.
+</p>
+
+<ul>
+  <li><b>Circle Size:</b> Represents earthquake magnitude based on the Richter scale. Magnitude is logarithmic, meaning each whole number increase reflects ~32 times more energy release.</li>
+  
+  <li><b>Color Scale (Depth):</b> Earthquake depth is categorized in kilometers:
+    <ul>
+      <li>0–70 km: Shallow (high damage potential)</li>
+      <li>70–300 km: Intermediate</li>
+      <li>300+ km: Deep-focus earthquakes</li>
+    </ul>
+  </li>
+  
+  <li><b>Blue Highlight Rings:</b> Earthquakes with magnitude ≥ 5.0 are emphasized. These moderate-to-strong events are capable of causing structural damage and are critical for hazard monitoring.</li>
+  
+  <li><b>Temporal Slider:</b> Enables dynamic visualization of seismic activity over time, allowing identification of temporal clustering and seismic sequences.</li>
+</ul>
+
+<h4>Tectonic and Geophysical Context</h4>
+
+<p>
+Earthquakes are strongly associated with plate tectonic processes. The Earth's crust 
+is divided into lithospheric plates that interact at boundaries classified as:
+</p>
+
+<ul>
+  <li><b>Convergent Boundaries:</b> Plates collide, often forming subduction zones where deep and powerful earthquakes occur.</li>
+  <li><b>Divergent Boundaries:</b> Plates move apart, generating shallow earthquakes along mid-ocean ridges.</li>
+  <li><b>Transform Boundaries:</b> Plates slide past each other, producing frequent shallow earthquakes.</li>
+</ul>
+
+<p>
+High concentrations of earthquakes are visible along the Pacific Ring of Fire, which 
+is one of the most seismically active regions on Earth.
+</p>
+
+<h4>Magnitude Frequency Relationship</h4>
+
+<p>
+The observed magnitude distribution follows the Gutenberg–Richter relationship, which 
+states that smaller earthquakes occur much more frequently than larger ones. This is 
+evident in the histogram where low-magnitude events dominate, while high-magnitude 
+events (≥5) are relatively rare but significantly more impactful.
+</p>
+
+<h4>Depth and Impact Analysis</h4>
+
+<p>
+Earthquake depth plays a critical role in surface impact:
+</p>
+
+<ul>
+  <li>Shallow earthquakes release energy closer to the surface, causing stronger ground shaking.</li>
+  <li>Intermediate earthquakes occur within subducting slabs and may affect wider regions.</li>
+  <li>Deep earthquakes originate far below the surface and typically cause less damage despite their magnitude.</li>
+</ul>
+
+<h4>Spatiotemporal Patterns</h4>
+
+<p>
+By integrating spatial and temporal dimensions, this dashboard allows identification of:
+</p>
+
+<ul>
+  <li>Seismic clusters and hotspots</li>
+  <li>Aftershock sequences following major events</li>
+  <li>Temporal variations in earthquake frequency</li>
+</ul>
+
+<p>
+Such patterns are essential for understanding seismic hazards, improving early warning 
+systems, and supporting disaster risk reduction strategies.
+</p>
+
+<h4>Scientific Significance</h4>
+
+<p>
+This visualization supports geospatial analysis of seismic hazards by combining 
+cartographic representation with statistical insights. Highlighting high-magnitude 
+events using blue rings enhances rapid identification of potentially hazardous 
+earthquakes, making the dashboard useful for both scientific exploration and 
+decision-making contexts.
+</p>
+<!-- /* <b>Scientific Interpretation</b><br><br>
+
+This dashboard visualizes global seismic activity over a monthly period using USGS data.
+
+<ul>
+<li><b>Circle size</b> represents earthquake magnitude</li>
+<li><b>Color</b> indicates depth (shallow to deep)</li>
+<li><b>Slider</b> shows earthquakes for the selected day</li>
+</ul>
+
+<b>Key Observations:</b><br>
+• Earthquakes align along tectonic plate boundaries (Ring of Fire)<br>
+• Shallow earthquakes (&lt;70 km) dominate and are most hazardous<br>
+• Deep earthquakes occur in subduction zones<br>*/ -->
+
+<b>Conclusion:</b><br>
+This visualization highlights spatial concentration and temporal evolution of seismic hazards.
 </div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</div>
+</div>
 
-<script src="js/main.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+let map = L.map('map').setView([20,0],2);
+
+/* BASEMAPS */
+let dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
+let light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png');
+let terrain = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png');
+let osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+dark.addTo(map);
+
+L.control.layers({
+  "Dark": dark,
+  "Light": light,
+  "Terrain": terrain,
+  "OSM": osm
+}).addTo(map);
+
+let geojsonData, timestamps=[];
+let currentIndex=0;
+let geojsonLayer;
+let minMag=1;
+let chart, histogram, interval;
+
+/* DEPTH COLOR */
+function getDepthColor(d){
+  return d>300?"#7f0000":
+         d>200?"#b30000":
+         d>100?"#d7301f":
+         d>50?"#fc8d59":
+                "#fdcc8a";
+}
+
+/* LOAD DATA */
+fetch("data/earthquakes.geojson")
+.then(res=>res.json())
+.then(data=>{
+  geojsonData=data;
+  data.features.forEach(f=>{
+    let day=new Date(f.properties.time).toISOString().split("T")[0];
+    f.properties.day=day;
+    if(!timestamps.includes(day)) timestamps.push(day);
+  });
+  timestamps.sort();
+
+  createSlider();
+  createChart();
+  createHistogram();
+  loadPlates();
+  addRiskZones();  // now visible
+  updateMap();
+});
+
+/* UPDATE MAP */
+function updateMap(){
+  if(geojsonLayer) map.removeLayer(geojsonLayer);
+
+  let currentDay=timestamps[currentIndex];
+  if(!currentDay) return;
+
+  geojsonLayer=L.geoJson(geojsonData,{
+    filter: f =>
+      f.properties.day === currentDay &&
+      f.properties.mag >= minMag,
+
+    pointToLayer: (f, latlng)=>{
+      let depth=f.geometry.coordinates[2];
+      let mag=f.properties.mag;
+
+      let marker=L.circleMarker(latlng,{
+        radius:Math.min(12,Math.max(2,mag*2)),
+        fillColor:getDepthColor(depth),
+        color:"#fff",
+        weight:0.5,
+        fillOpacity:0.7
+      });
+
+      if(mag>=5){
+        marker.setStyle({color:"#00ffff",weight:2});
+      }
+
+      return marker;
+    },
+
+    onEachFeature:(f,layer)=>{
+      layer.bindPopup(`
+        <b>Magnitude:</b> ${f.properties.mag}<br>
+        <b>Depth:</b> ${f.geometry.coordinates[2]} km<br>
+        <b>Location:</b> ${f.properties.place}
+      `);
+    }
+  }).addTo(map);
+
+  updateStats();
+  updateLiveStats();
+  updateHistogramForDay(currentDay);
+}
+
+/* HISTOGRAM */
+function createHistogram(){
+  histogram = new Chart(document.getElementById("histogram"),{
+    type:"bar",
+    data:{
+      labels: ["0+","1+","2+","3+","4+","5+","6+","7+"],
+      datasets:[{label:"Magnitude Distribution",data:[],backgroundColor:"#ff6600"}]
+    }
+  });
+}
+
+function updateHistogramForDay(day){
+  let bins = [0,1,2,3,4,5,6,7];
+  let counts = new Array(bins.length).fill(0);
+  geojsonData.features.forEach(f=>{
+    if(f.properties.day===day && f.properties.mag>=minMag){
+      let index = Math.floor(f.properties.mag);
+      if(index>=0 && index<counts.length) counts[index]++;
+    }
+  });
+  histogram.data.datasets[0].data = counts;
+  histogram.update();
+}
+
+/* RISK ZONES (Accurate along tectonic plates) */
+function addRiskZones(){
+  fetch("data/plates.geojson")
+  .then(res=>res.json())
+  .then(data=>{
+    L.geoJson(data,{
+      style:{
+        color:"red",
+        weight:2,
+        fillOpacity:0.2  // now clearly visible
+      },
+      onEachFeature:(f,layer)=>{
+        layer.bindTooltip("High Seismic Risk Zone",{permanent:false});
+      }
+    }).addTo(map);
+  });
+}
+
+/* SLIDER */
+function createSlider(){
+  let control=L.control({position:'bottomleft'});
+  control.onAdd=function(){
+    let div=L.DomUtil.create('div','sequence-control-container');
+    div.innerHTML=`
+      <button id="reverse">◀</button>
+      <input id="range-slider" type="range">
+      <button id="forward">▶</button>
+      <div id="date-label"></div>`;
+    return div;
+  };
+  control.addTo(map);
+
+  let slider=document.getElementById("range-slider");
+  slider.max=timestamps.length-1;
+  slider.value=0;
+  document.getElementById("date-label").innerHTML=timestamps[0];
+
+  slider.oninput=function(){
+    currentIndex=+this.value;
+    document.getElementById("date-label").innerHTML=timestamps[currentIndex];
+    updateMap();
+  };
+
+  document.getElementById("forward").onclick=function(){
+    currentIndex=(currentIndex+1)%timestamps.length;
+    slider.value=currentIndex;
+    updateMap();
+  };
+
+  document.getElementById("reverse").onclick=function(){
+    currentIndex=(currentIndex-1+timestamps.length)%timestamps.length;
+    slider.value=currentIndex;
+    updateMap();
+  };
+}
+
+/* STATS */
+function updateStats(){
+  let count=geojsonData.features.filter(f =>
+    f.properties.day === timestamps[currentIndex] &&
+    f.properties.mag >= minMag).length;
+  document.getElementById("stats").innerHTML="<b>Total Earthquakes:</b> "+count;
+}
+
+function updateLiveStats(){
+  let visible=geojsonData.features.filter(f =>
+    f.properties.day === timestamps[currentIndex] &&
+    f.properties.mag >= minMag);
+  let maxMag=visible.length ? Math.max(...visible.map(f=>f.properties.mag)) : 0;
+  document.getElementById("liveStats").innerHTML=`
+    <b>Visible:</b> ${visible.length}<br>
+    <b>Max Magnitude:</b> ${maxMag.toFixed(2)}<br>
+    <b>Date:</b> ${timestamps[currentIndex]}`;
+}
+
+/* CHART */
+function createChart(){
+  let counts=timestamps.map(day =>
+    geojsonData.features.filter(f=>f.properties.day===day).length);
+  chart=new Chart(document.getElementById("chart"),{
+    type:"line",
+    data:{labels:timestamps,datasets:[{label:"Earthquakes per Day",data:counts,borderColor:"#00ffff",borderWidth:2}]}
+  });
+}
+
+/* FILTER */
+document.getElementById("magFilter").oninput=function(){
+  minMag=+this.value;
+  document.getElementById("magValue").innerHTML=minMag;
+  updateMap();
+};
+
+/* PLAY */
+document.getElementById("play").onclick=function(){
+  if(interval){clearInterval(interval);interval=null;this.innerHTML="▶ Play";return;}
+  this.innerHTML="⏸ Pause";
+  interval=setInterval(()=>{
+    currentIndex=(currentIndex+1)%timestamps.length;
+    document.getElementById("range-slider").value=currentIndex;
+    updateMap();
+  },700);
+};
+
+// /* LEGEND */
+// let legend=L.control({position:"bottomright"});
+// legend.onAdd=function(){
+//   let div=L.DomUtil.create("div","legend");
+//   div.innerHTML="<b>Earthquake Depth (km)</b><br>";
+//   [50,100,200,300].forEach(d=>{
+//     div.innerHTML+=`<div><span style="background:${getDepthColor(d)}"></span>${d}+</div>`;
+//   });
+//   div.innerHTML+=`<div><span class="risk"></span>High Seismic Risk Zone</div>`;
+//   return div;
+// };
+// legend.addTo(map);
+// /* LEGEND */
+let legend = L.control({ position: "bottomright" });
+
+legend.onAdd = function() {
+  let div = L.DomUtil.create("div", "legend");
+  div.innerHTML = "<b>Earthquake Depth (km)</b><br>";
+  
+  [50, 100, 200, 300].forEach(d => {
+    div.innerHTML += `<div><span style="background:${getDepthColor(d)}"></span>${d}+</div>`;
+  });
+
+  return div;
+};
+
+legend.addTo(map);
+
+});
+</script>
 
 </body>
 </html>

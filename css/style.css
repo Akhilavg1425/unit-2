@@ -1,93 +1,111 @@
 html, body {
-height: 100%;
-margin: 0;
-font-family: Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+  background: #111;
+  color: rgb(123, 113, 113);
+  font-family: Arial, sans-serif;
 }
 
-/* TITLE */
-
-h1{
-text-align:center;
-margin:0;
-padding:10px;
-background:rgb(116, 114, 114);
+h1 {
+  height: 60px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
 }
 
-/* MAP */
-
-#map{
-width:100%;
-height:calc(100vh - 70px);
-position:relative;
+/* FIX GAP */
+#container {
+  display: flex;
+  height: calc(100vh - 60px);
 }
 
-/* SEQUENCE CONTROLS */
-
-.sequence-control-container{
-background:black;
-padding:10px;
-border-radius:8px;
-box-shadow:0 0 10px rgba(0,0,0,0.4);
-color:white;
+#map {
+  flex: 3;
+  height: 100%;
 }
 
-.sequence-control-container button{
-background:#ff6600;
-border:none;
-color:white;
-padding:5px 10px;
-margin:2px;
-cursor:pointer;
+#side-panel {
+  flex: 1;
+  background: #1b1b1b;
+  padding: 15px;
+  overflow: auto;
 }
 
-#range-slider{
-width:200px;
+.sequence-control-container {
+  background: black;
+  padding: 10px;
+  border-radius: 8px;
+  color: rgb(244, 242, 241);
 }
 
-#date-label{
-margin-top:5px;
-font-weight:bold;
-color:#ff6600;
+.legend {
+  background: #222;
+  padding: 10px;
+  border-radius: 6px;
+}
+.legend span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+}
+/* ===== PANEL TEXT STYLING ===== */
+#infoPanel {
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;   /* smaller text */
+  line-height: 1.5;
+  color: #dcdcdc;    /* soft white */
 }
 
-/* LEGEND */
-
-.legend{
-background:rgb(110, 109, 109);
-padding:10px;
-line-height:18px;
-border-radius:5px;
-box-shadow:0 0 10px rgba(224, 218, 218, 0.3);
-font-size:13px;
+/* ===== HEADINGS ===== */
+#infoPanel h3 {
+  color: #00e5ff;   /* bright cyan */
+  font-size: 18px;
+  margin-bottom: 8px;
 }
 
-.legend h4{
-margin:0 0 5px 0;
+#infoPanel h4 {
+  color: #ff9800;   /* orange */
+  font-size: 15px;
+  margin-top: 12px;
+  margin-bottom: 6px;
 }
 
-.legend-item{
-display:flex;
-align-items:center;
-margin-bottom:4px;
+/* ===== PARAGRAPHS ===== */
+#infoPanel p {
+  font-size: 13px;
+  color: #cfcfcf;
 }
 
-.legend svg{
-margin-right:6px;
+/* ===== LISTS ===== */
+#infoPanel ul {
+  padding-left: 18px;
 }
 
-/* MAP DESCRIPTION OVERLAY */
+#infoPanel li {
+  margin-bottom: 6px;
+  font-size: 13px;
+}
 
-#map-overlay{
-position:absolute;
-top:20px;
-left:70px;
-background:rgba(101, 100, 100, 0.9);
-padding:12px;
-width:260px;
-font-size:12px;
-border-radius:6px;
-box-shadow:0 0 10px rgba(225, 222, 222, 0.3);
-font-family:Arial, sans-serif;
-line-height:1.4;
-z-index:1000;
+/* ===== BOLD TEXT HIGHLIGHT ===== */
+#infoPanel b {
+  color: #ffffff;
+}
+
+/* ===== OPTIONAL: SCROLLABLE PANEL ===== */
+#infoPanel {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ===== OPTIONAL: NICE SCROLLBAR ===== */
+#infoPanel::-webkit-scrollbar {
+  width: 6px;
+}
+
+#infoPanel::-webkit-scrollbar-thumb {
+  background: #00e5ff;
+  border-radius: 10px;
 }
