@@ -26,7 +26,7 @@ L.control.layers({
     "Voyager": voyager
 }).addTo(map);
 
-/* ================= DEPTH COLOR ================= */
+/*  DEPTH COLOR  */
 function getDepthColor(d) {
     return d > 300 ? "#7f0000" :
         d > 200 ? "#b30000" :
@@ -35,8 +35,8 @@ function getDepthColor(d) {
         "#fdcc8a";
 }
 
-/* ================= LOAD DATA ================= */
-fetch("data/earthquakes.geojson")
+/* LOAD DATA  */
+fetch("earthquakes.geojson")
     .then(res => res.json())
     .then(data => {
 
@@ -56,7 +56,7 @@ fetch("data/earthquakes.geojson")
         updateMap();
     });
 
-/* ================= UPDATE MAP ================= */
+/* UPDATE MAP  */
 function updateMap() {
 
     if (geojsonLayer) map.removeLayer(geojsonLayer);
@@ -226,7 +226,7 @@ document.getElementById("play").onclick = function () {
 };
 
 /*  PLATES  */
-fetch("data/plates.geojson")
+fetch("plates.geojson")
     .then(res => res.json())
     .then(data => {
         L.geoJson(data, {
