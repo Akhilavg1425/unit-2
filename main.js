@@ -1,4 +1,4 @@
-/* ================= GLOBAL ================= */
+/* GLOBAL */
 let map, geojsonData, timestamps = [];
 let currentIndex = 0;
 let geojsonLayer;
@@ -6,7 +6,7 @@ let minMag = 1;
 let chart;
 let interval;
 
-/* ================= MAP ================= */
+/* MAP  */
 map = L.map('map').setView([20, 0], 2);
 
 /* BASEMAPS */
@@ -99,7 +99,7 @@ function updateMap() {
     updateLiveStats();
 }
 
-/* ================= SEQUENCE CONTROL ================= */
+/*  SEQUENCE CONTROL  */
 function createSequenceControls() {
 
     let control = L.control({ position: 'bottomleft' });
@@ -147,7 +147,7 @@ function createSequenceControls() {
     };
 }
 
-/* ================= STATS ================= */
+/* STATS  */
 function updateStats() {
 
     let count = geojsonData.features.filter(f =>
@@ -159,7 +159,7 @@ function updateStats() {
         "<b>Total Earthquakes:</b> " + count;
 }
 
-/* ================= LIVE STATS ================= */
+/* LIVE STATS  */
 function updateLiveStats() {
 
     let visible = geojsonData.features.filter(f =>
@@ -176,7 +176,7 @@ function updateLiveStats() {
     `;
 }
 
-/* ================= CHART ================= */
+/*  CHART  */
 function createChart() {
 
     let counts = timestamps.map(day =>
@@ -199,14 +199,14 @@ function createChart() {
     });
 }
 
-/* ================= FILTER ================= */
+/*  FILTER  */
 document.getElementById("magFilter").oninput = function () {
     minMag = +this.value;
     document.getElementById("magValue").innerHTML = minMag;
     updateMap();
 };
 
-/* ================= PLAY ================= */
+/*PLAY  */
 document.getElementById("play").onclick = function () {
 
     if (interval) {
@@ -225,7 +225,7 @@ document.getElementById("play").onclick = function () {
     }, 700);
 };
 
-/* ================= PLATES ================= */
+/*  PLATES  */
 fetch("data/plates.geojson")
     .then(res => res.json())
     .then(data => {
@@ -234,7 +234,7 @@ fetch("data/plates.geojson")
         }).addTo(map);
     });
 
-/* ================= LEGEND ================= */
+/* LEGEND  */
 let legend = L.control({ position: "bottomright" });
 
 legend.onAdd = function () {
