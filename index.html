@@ -269,7 +269,7 @@ function getDepthColor(d){
 }
 
 /* LOAD DATA */
-fetch("data/earthquakes.geojson")
+fetch("earthquakes.geojson")
 .then(res=>res.json())
 .then(data=>{
   geojsonData=data;
@@ -359,7 +359,7 @@ function updateHistogramForDay(day){
 
 /* RISK ZONES (Accurate along tectonic plates) */
 function addRiskZones(){
-  fetch("data/plates.geojson")
+  fetch("plates.geojson")
   .then(res=>res.json())
   .then(data=>{
     L.geoJson(data,{
