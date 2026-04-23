@@ -36,7 +36,7 @@ function getDepthColor(d) {
 }
 
 /* LOAD DATA  */
-fetch("earthquakes.geojson")
+fetch("https://raw.githubusercontent.com/Akhilavg1425/unit-2/main/earthquakes.geojson")
     .then(res => res.json())
     .then(data => {
 
